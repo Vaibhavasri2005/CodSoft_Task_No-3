@@ -1,0 +1,10 @@
+package com.studentgrade.service;
+
+import com.studentgrade.dto.AuthDtos.SubjectRequest; import org.springframework.stereotype.Service; import java.util.List;
+
+@Service public class GradeCalculationService {
+    public int total(List<SubjectRequest> subjects){return subjects.stream().mapToInt(s->s.marks()).sum();}
+    public String grade(double percentage){if(percentage>=90)return "A+"; if(percentage>=80)return "A"; if(percentage>=70)return "B"; if(percentage>=60)return "C"; if(percentage>=50)return "D"; if(percentage>=40)return "E"; return "F";}
+    public String feedback(double p){if(p>=90)return "Outstanding performance! You have demonstrated excellent understanding across your subjects. Keep maintaining this level of consistency and continue challenging yourself."; if(p>=80)return "Excellent work! Your performance shows strong understanding of the subjects. With a little more focus on weaker areas, you can reach the top grade."; if(p>=70)return "Good performance! You have built a strong academic foundation. Focus on the subjects where you scored lower and aim for greater consistency."; if(p>=60)return "You're making good progress. Strengthen your understanding of the topics where you lost marks and practice regularly to improve your overall performance."; if(p>=50)return "You're on the right track, but there is room for improvement. Review important concepts, practice more questions and focus on your weaker subjects."; if(p>=40)return "You have passed, but you should focus on improving your fundamentals. Create a study plan and spend additional time on subjects where your marks are lower."; return "Don't be discouraged. This result is an opportunity to identify the areas that need improvement. Strengthen your fundamentals, practice consistently and keep working towards your goal.";}
+    public String status(double p){return p>=80?"Excellent":p>=60?"Good progress":p>=40?"Keep improving":"Needs focused practice";}
+}

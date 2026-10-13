@@ -1,0 +1,3 @@
+package com.studentgrade.exception;
+import org.springframework.http.*; import org.springframework.web.bind.annotation.*; import org.springframework.web.server.ResponseStatusException; import java.util.Map;
+@RestControllerAdvice public class GlobalExceptionHandler { @ExceptionHandler(ResponseStatusException.class) public ResponseEntity<Map<String,Object>> status(ResponseStatusException e){return ResponseEntity.status(e.getStatusCode()).body(Map.of("success",false,"message",e.getReason()==null?"Request failed":e.getReason()));} @ExceptionHandler(Exception.class) public ResponseEntity<Map<String,Object>> other(Exception e){return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("success",false,"message","Please check your request and try again."));} }

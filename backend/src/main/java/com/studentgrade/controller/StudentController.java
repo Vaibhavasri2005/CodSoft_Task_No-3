@@ -1,0 +1,3 @@
+package com.studentgrade.controller;
+import com.studentgrade.dto.AuthDtos.StudentResponse; import com.studentgrade.service.AuthService; import com.studentgrade.repository.StudentRepository; import org.springframework.security.core.Authentication; import org.springframework.web.bind.annotation.*;
+@RestController @RequestMapping("/api/students") public class StudentController { private final StudentRepository repo; private final AuthService auth; public StudentController(StudentRepository r,AuthService a){this.repo=r;this.auth=a;} @GetMapping("/profile") public StudentResponse profile(Authentication a){return repo.findByRollNumber(a.getName()).map(auth::toResponse).orElseThrow();} }

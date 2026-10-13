@@ -1,0 +1,10 @@
+package com.studentgrade.service;
+
+import com.studentgrade.dto.AuthDtos.*; import com.studentgrade.entity.Student; import com.studentgrade.repository.StudentRepository; import com.studentgrade.security.JwtService; import org.springframework.security.crypto.password.PasswordEncoder; import org.springframework.stereotype.Service; import org.springframework.http.HttpStatus; import org.springframework.web.server.ResponseStatusException;
+
+@Service public class AuthService { private final StudentRepository repo; private final PasswordEncoder encoder; private final JwtService jwt;
+ public AuthService(StudentRepository repo,PasswordEncoder encoder,JwtService jwt){this.repo=repo;this.encoder=encoder;this.jwt=jwt;}
+ public MessageResponse register(RegisterRequest r){if(repo.existsByRollNumber(r.rollNumber().trim())) throw new ResponseStatusException(HttpStatus.CONFLICT,"Roll number already exists"); if(r.dateOfBirth().plusYears(13).isAfter(java.time.LocalDate.now())) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Student must be at least 13 years old"); Student s=new Student();s.setName(r.name().trim());s.setRollNumber(r.rollNumber().trim());s.setDateOfBirth(r.dateOfBirth());s.setPassword(encoder.encode(r.password()));repo.save(s);return new MessageResponse(true,"Registration successful! You can now log in.");}
+ public AuthResponse login(LoginRequest r){Student s=repo.findByRollNumber(r.rollNumber()).filter(x->x.getDateOfBirth().equals(r.dateOfBirth())).orElseThrow(()->new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Invalid credentials"));if(!encoder.matches(r.password(),s.getPassword()))throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Invalid credentials");return new AuthResponse(jwt.generate(s.getRollNumber()),toResponse(s));}
+ public StudentResponse toResponse(Student s){return new StudentResponse(s.getId(),s.getName(),s.getRollNumber(),s.getDateOfBirth(),s.getCreatedAt());}
+}
